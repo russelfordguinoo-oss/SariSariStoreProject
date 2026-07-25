@@ -4,8 +4,8 @@ const pool = require('../config/db');
 
 // Change these two values to your actual admin credentials
 const ADMIN_NAME = 'Store Owner';
-const ADMIN_EMAIL = 'owner@sarisaristore.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
+const ADMIN_EMAIL = 'Russelfordguinoo@gmail.com';
+const ADMIN_PASSWORD = '1122003';
 
 async function createAdmin() {
   try {

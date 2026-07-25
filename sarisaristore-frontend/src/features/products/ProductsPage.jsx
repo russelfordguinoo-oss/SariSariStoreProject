@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../api/products.api';
 import { getCategories } from '../../api/categories.api';
 import ProductForm from './ProductForm';
+import { getLowStock } from '../../api/inventory.api';
+import StockHistoryModal from './StockHistoryModal';
 
 function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -11,12 +13,20 @@ function ProductsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lowStockItems, setLowStockItems] = useState([]);
+  const [historyProduct, setHistoryProduct] = useState(null);
+
+  async function loadLowStock() {
+    const data = await getLowStock();
+    setLowStockItems(data);
+  }
 
   async function loadProducts() {
     setLoading(true);
     const data = await getProducts({ search, categoryId: categoryFilter });
     setProducts(data);
     setLoading(false);
+    loadLowStock();
   }
 
   useEffect(() => {
@@ -56,6 +66,13 @@ function ProductsPage() {
           + Add Product
         </button>
       </div>
+
+      {lowStockItems.length > 0 && (
+        <div className="bg-amber-50 border border-amber-300 text-amber-800 text-sm rounded p-3 mb-4">
+          <strong>{lowStockItems.length} product{lowStockItems.length > 1 ? 's' : ''}</strong> running low on stock:{' '}
+          {lowStockItems.map((p) => p.name).join(', ')}
+        </div>
+      )}
 
       <div className="flex gap-3 mb-4">
         <input
@@ -102,6 +119,12 @@ function ProductsPage() {
                 </td>
                 <td className="py-2 text-right">
                   <button
+                    onClick={() => setHistoryProduct(p)}
+                    className="text-gray-600 hover:underline mr-3"
+                  >
+                    History
+                  </button>
+                  <button
                     onClick={() => { setEditingProduct(p); setShowForm(true); }}
                     className="text-blue-600 hover:underline mr-3"
                   >
@@ -126,6 +149,13 @@ function ProductsPage() {
           categories={categories}
           onSubmit={handleSave}
           onCancel={() => { setShowForm(false); setEditingProduct(null); }}
+        />
+      )}
+
+      {historyProduct && (
+        <StockHistoryModal
+          product={historyProduct}
+          onClose={() => setHistoryProduct(null)}
         />
       )}
     </div>

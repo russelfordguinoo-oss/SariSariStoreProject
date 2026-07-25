@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from '../features/auth/LoginPage';
 import ProtectedRoute from '../components/layout/ProtectedRoute';
 import ProductsPage from '../features/products/ProductsPage';
+import SalesPage from '../features/sales/SalesPage';
 
 function DashboardPlaceholder() {
   return <h1 className="p-8 text-2xl font-bold">Dashboard (coming soon)</h1>;
@@ -25,6 +26,14 @@ function AppRouter() {
           element={
             <ProtectedRoute>
               <ProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sales"
+          element={
+            <ProtectedRoute>
+              <SalesPage />
             </ProtectedRoute>
           }
         />
