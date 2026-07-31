@@ -30,10 +30,10 @@ function ReportsPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Reports</h1>
+    <div className="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+      <div className="mb-6"><p className="text-sm font-bold uppercase tracking-wide text-red-700">Business insights</p><h1 className="text-3xl font-extrabold">Reports</h1></div>
 
-      <div className="flex items-end gap-3 mb-6">
+      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-end">
         <div>
           <label className="block text-sm font-medium mb-1">Start Date</label>
           <input
@@ -55,7 +55,7 @@ function ReportsPage() {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-red-700 px-5 py-2.5 font-bold text-white hover:bg-red-800 disabled:opacity-50"
         >
           {loading ? 'Loading...' : 'Generate Report'}
         </button>
@@ -63,7 +63,7 @@ function ReportsPage() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="bg-green-600 text-white px-4 py-2 rounded font-medium hover:bg-green-700 disabled:opacity-50"
+            className="rounded-lg bg-yellow-400 px-5 py-2.5 font-bold text-red-900 hover:bg-yellow-300 disabled:opacity-50"
           >
             {exporting ? 'Exporting...' : 'Export to Excel'}
           </button>

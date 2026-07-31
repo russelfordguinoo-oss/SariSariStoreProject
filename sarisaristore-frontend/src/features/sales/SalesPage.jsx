@@ -70,23 +70,23 @@ function SalesPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto grid grid-cols-3 gap-6">
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 p-4 sm:p-6 lg:grid-cols-3 lg:p-8">
       {/* Product search + grid */}
-      <div className="col-span-2">
-        <h1 className="text-2xl font-bold mb-4">New Sale</h1>
+      <div className="lg:col-span-2">
+        <div className="mb-4"><p className="text-sm font-bold uppercase tracking-wide text-red-700">Quick checkout</p><h1 className="text-3xl font-extrabold">New Sale</h1></div>
         <input
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full border rounded p-2 mb-4"
         />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {products.map((p) => (
             <button
               key={p.id}
               onClick={() => addToCart(p)}
               disabled={p.current_stock === 0}
-              className="border rounded p-3 text-left hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm hover:border-yellow-400 hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <p className="font-medium">{p.name}</p>
               <p className="text-sm text-gray-500">
@@ -98,7 +98,7 @@ function SalesPage() {
       </div>
 
       {/* Cart */}
-      <div className="border rounded-lg p-4 h-fit sticky top-6">
+      <div className="h-fit rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-6">
         <h2 className="text-lg font-bold mb-3">Cart</h2>
 
         {cart.length === 0 ? (
@@ -152,7 +152,7 @@ function SalesPage() {
         <button
           onClick={handleCheckout}
           disabled={cart.length === 0 || processing}
-          className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-red-700 py-3 font-bold text-white hover:bg-red-800 disabled:opacity-50"
         >
           {processing ? 'Processing...' : 'Complete Sale'}
         </button>

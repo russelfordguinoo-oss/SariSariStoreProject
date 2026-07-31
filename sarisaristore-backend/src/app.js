@@ -7,6 +7,7 @@ const salesRoutes = require('./modules/sales/sales.routes');
 const inventoryRoutes = require('./modules/inventory/inventory.routes');
 const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
 const reportsRoutes = require('./modules/reports/reports.routes');
+const assistantRoutes = require('./modules/assistant/assistant.routes');
 
 const app = express();
 
@@ -24,4 +25,5 @@ app.use('/api/sales', salesRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/assistant', assistantRoutes);
 module.exports = app;

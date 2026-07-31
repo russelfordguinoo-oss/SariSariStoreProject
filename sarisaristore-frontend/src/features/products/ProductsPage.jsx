@@ -6,160 +6,17 @@ import { getLowStock } from '../../api/inventory.api';
 import StockHistoryModal from './StockHistoryModal';
 
 function ProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [lowStockItems, setLowStockItems] = useState([]);
-  const [historyProduct, setHistoryProduct] = useState(null);
-
-  async function loadLowStock() {
-    const data = await getLowStock();
-    setLowStockItems(data);
-  }
-
-  async function loadProducts() {
-    setLoading(true);
-    const data = await getProducts({ search, categoryId: categoryFilter });
-    setProducts(data);
-    setLoading(false);
-    loadLowStock();
-  }
-
-  useEffect(() => {
-    getCategories().then(setCategories);
-  }, []);
-
-  // Re-fetch whenever search or category filter changes
-  useEffect(() => {
-    loadProducts();
-  }, [search, categoryFilter]);
-
-  async function handleSave(formData) {
-    if (editingProduct) {
-      await updateProduct(editingProduct.id, formData);
-    } else {
-      await createProduct(formData);
-    }
-    setShowForm(false);
-    setEditingProduct(null);
-    loadProducts();
-  }
-
-  async function handleDelete(id) {
-    if (!confirm('Delete this product? This cannot be undone.')) return;
-    await deleteProduct(id);
-    loadProducts();
-  }
-
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Products</h1>
-        <button
-          onClick={() => { setEditingProduct(null); setShowForm(true); }}
-          className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700"
-        >
-          + Add Product
-        </button>
-      </div>
-
-      {lowStockItems.length > 0 && (
-        <div className="bg-amber-50 border border-amber-300 text-amber-800 text-sm rounded p-3 mb-4">
-          <strong>{lowStockItems.length} product{lowStockItems.length > 1 ? 's' : ''}</strong> running low on stock:{' '}
-          {lowStockItems.map((p) => p.name).join(', ')}
-        </div>
-      )}
-
-      <div className="flex gap-3 mb-4">
-        <input
-          placeholder="Search products..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded p-2 flex-1"
-        />
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="border rounded p-2"
-        >
-          <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-      </div>
-
-      {loading ? (
-        <p className="text-gray-500">Loading...</p>
-      ) : (
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b text-left text-sm text-gray-600">
-              <th className="py-2">Name</th>
-              <th className="py-2">Category</th>
-              <th className="py-2">Price</th>
-              <th className="py-2">Stock</th>
-              <th className="py-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.id} className="border-b">
-                <td className="py-2">{p.name}</td>
-                <td className="py-2">{p.category_name || '—'}</td>
-                <td className="py-2">₱{parseFloat(p.price).toFixed(2)}</td>
-                <td className="py-2">
-                  <span className={p.current_stock <= p.low_stock_threshold ? 'text-red-600 font-semibold' : ''}>
-                    {p.current_stock}
-                  </span>
-                </td>
-                <td className="py-2 text-right">
-                  <button
-                    onClick={() => setHistoryProduct(p)}
-                    className="text-gray-600 hover:underline mr-3"
-                  >
-                    History
-                  </button>
-                  <button
-                    onClick={() => { setEditingProduct(p); setShowForm(true); }}
-                    className="text-blue-600 hover:underline mr-3"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {showForm && (
-        <ProductForm
-          initialData={editingProduct}
-          categories={categories}
-          onSubmit={handleSave}
-          onCancel={() => { setShowForm(false); setEditingProduct(null); }}
-        />
-      )}
-
-      {historyProduct && (
-        <StockHistoryModal
-          product={historyProduct}
-          onClose={() => setHistoryProduct(null)}
-        />
-      )}
-    </div>
-  );
+  const [products, setProducts] = useState([]); const [categories, setCategories] = useState([]); const [search, setSearch] = useState(''); const [categoryFilter, setCategoryFilter] = useState(''); const [showForm, setShowForm] = useState(false); const [editingProduct, setEditingProduct] = useState(null); const [loading, setLoading] = useState(true); const [lowStockItems, setLowStockItems] = useState([]); const [historyProduct, setHistoryProduct] = useState(null);
+  async function loadLowStock() { const data = await getLowStock(); setLowStockItems(data); }
+  async function loadProducts() { setLoading(true); const data = await getProducts({ search, categoryId: categoryFilter }); setProducts(data); setLoading(false); loadLowStock(); }
+  useEffect(() => { getCategories().then(setCategories); }, []); useEffect(() => { loadProducts(); }, [search, categoryFilter]);
+  async function handleSave(formData) { if (editingProduct) await updateProduct(editingProduct.id, formData); else await createProduct(formData); setShowForm(false); setEditingProduct(null); loadProducts(); }
+  async function handleDelete(id) { if (!confirm('Delete this product? This cannot be undone.')) return; await deleteProduct(id); loadProducts(); }
+  return <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8"><div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-bold uppercase tracking-wide text-red-700">Product catalog</p><h1 className="text-3xl font-extrabold">Products</h1></div><button onClick={() => { setEditingProduct(null); setShowForm(true); }} className="rounded-xl bg-red-700 px-5 py-3 font-bold text-white shadow-sm hover:bg-red-800">+ Add Product</button></div>
+    {lowStockItems.length > 0 && <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm"><strong>{lowStockItems.length} product{lowStockItems.length > 1 ? 's' : ''}</strong> running low on stock: {lowStockItems.map((product) => product.name).join(', ')}</div>}
+    <div className="mb-5 flex flex-col gap-3 sm:flex-row"><input placeholder="Search products..." value={search} onChange={(event) => setSearch(event.target.value)} className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-600 focus:ring-2 focus:ring-red-100" /><select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-600 focus:ring-2 focus:ring-red-100"><option value="">All Categories</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></div>
+    {loading ? <p className="text-slate-500">Loading...</p> : <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60"><table className="w-full min-w-[680px] border-collapse text-sm"><thead><tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-bold uppercase tracking-wide text-slate-500"><th className="px-4 py-3">Name</th><th className="px-4 py-3">Category</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3"></th></tr></thead><tbody>{products.map((product) => <tr key={product.id} className="border-b border-slate-100 transition last:border-0 hover:bg-red-50/40"><td className="px-4 py-3 font-semibold text-slate-800">{product.name}</td><td className="px-4 py-3 text-slate-500">{product.category_name || 'Uncategorized'}</td><td className="px-4 py-3 font-medium">{`\u20B1${parseFloat(product.price).toFixed(2)}`}</td><td className="px-4 py-3"><span className={product.current_stock <= product.low_stock_threshold ? 'font-semibold text-red-600' : ''}>{product.current_stock}</span></td><td className="whitespace-nowrap px-4 py-3 text-right"><button onClick={() => setHistoryProduct(product)} className="mr-2 rounded-lg px-2 py-1 font-semibold text-slate-600 hover:bg-slate-100">History</button><button onClick={() => { setEditingProduct(product); setShowForm(true); }} className="mr-2 rounded-lg px-2 py-1 font-semibold text-blue-600 hover:bg-blue-50">Edit</button><button onClick={() => handleDelete(product.id)} className="rounded-lg px-2 py-1 font-semibold text-red-600 hover:bg-red-50">Delete</button></td></tr>)}</tbody></table></div>}
+    {showForm && <ProductForm initialData={editingProduct} categories={categories} onSubmit={handleSave} onCancel={() => { setShowForm(false); setEditingProduct(null); }} />}{historyProduct && <StockHistoryModal product={historyProduct} onClose={() => setHistoryProduct(null)} />}
+  </div>;
 }
-
 export default ProductsPage;

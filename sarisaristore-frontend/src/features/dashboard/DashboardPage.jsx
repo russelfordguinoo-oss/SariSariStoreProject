@@ -1,108 +1,20 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getDashboardSummary } from '../../api/dashboard.api';
-
-function StatCard({ label, value, sublabel }) {
-  return (
-    <div className="border rounded-lg p-4">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-2xl font-bold">{value}</p>
-      {sublabel && <p className="text-xs text-gray-400 mt-1">{sublabel}</p>}
-    </div>
-  );
-}
-
+import { usePreferences } from '../../context/PreferencesContext';
+const money = (value) => `\u20B1${parseFloat(value).toFixed(2)}`;
+function StatCard({ label, value, sublabel, accent = 'red', draggable, onDragStart, onDrop }) { return <div draggable={draggable} onDragStart={onDragStart} onDragOver={(e) => e.preventDefault()} onDrop={onDrop} className="cursor-grab rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:shadow-lg active:cursor-grabbing dark:border-slate-700 dark:bg-slate-900"><span className={`mb-4 block h-2 w-10 rounded-full ${accent === 'yellow' ? 'bg-yellow-400' : 'bg-red-600'}`} /><p className="text-sm font-medium text-slate-500">{label}</p><p className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{value}</p>{sublabel && <p className="mt-1 text-xs font-medium text-slate-400">{sublabel}</p>}</div>; }
 function DashboardPage() {
-  const [summary, setSummary] = useState(null);
-
-  useEffect(() => {
-    getDashboardSummary().then(setSummary);
-  }, []);
-
-  if (!summary) {
-    return <p className="p-6 text-gray-500">Loading dashboard...</p>;
-  }
-
-  const maxTrendValue = Math.max(...summary.salesTrend.map((d) => parseFloat(d.total)), 1);
-
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          label="Today's Sales"
-          value={`₱${parseFloat(summary.todaySales.total).toFixed(2)}`}
-          sublabel={`${summary.todaySales.count} transaction${summary.todaySales.count === 1 ? '' : 's'}`}
-        />
-        <StatCard
-          label="This Month"
-          value={`₱${parseFloat(summary.monthSales.total).toFixed(2)}`}
-          sublabel={`${summary.monthSales.count} transaction${summary.monthSales.count === 1 ? '' : 's'}`}
-        />
-        <StatCard label="Total Products" value={summary.totalProducts} />
-        <StatCard
-          label="Low Stock"
-          value={summary.lowStockCount}
-          sublabel={summary.lowStockCount > 0 ? 'needs attention' : 'all good'}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Sales trend chart */}
-        <div className="border rounded-lg p-4">
-          <h2 className="font-bold mb-4">Sales — Last 7 Days</h2>
-          <div className="flex items-end gap-2 h-40">
-            {summary.salesTrend.length === 0 ? (
-              <p className="text-gray-400 text-sm">No sales data yet</p>
-            ) : (
-              summary.salesTrend.map((day) => {
-                const heightPct = (parseFloat(day.total) / maxTrendValue) * 100;
-                return (
-                  <div key={day.date} className="flex-1 flex flex-col items-center justify-end h-full">
-                    <div
-                      className="w-full bg-blue-500 rounded-t"
-                      style={{ height: `${heightPct}%`, minHeight: day.total > 0 ? '4px' : '0' }}
-                      title={`₱${parseFloat(day.total).toFixed(2)}`}
-                    />
-                    <span className="text-xs text-gray-400 mt-1">
-                      {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
-                    </span>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Recent transactions */}
-        <div className="border rounded-lg p-4">
-          <h2 className="font-bold mb-4">Recent Transactions</h2>
-          {summary.recentTransactions.length === 0 ? (
-            <p className="text-gray-400 text-sm">No transactions yet</p>
-          ) : (
-            <table className="w-full text-sm">
-              <tbody>
-                {summary.recentTransactions.map((t) => (
-                  <tr key={t.id} className="border-b last:border-0">
-                    <td className="py-2">
-                      <p className="font-medium">Sale #{t.id}</p>
-                      <p className="text-xs text-gray-400">{t.cashier_name}</p>
-                    </td>
-                    <td className="py-2 text-right">
-                      <p className="font-medium">₱{parseFloat(t.total_amount).toFixed(2)}</p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(t.created_at).toLocaleString()}
-                      </p>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  const [summary, setSummary] = useState(null); const [dragged, setDragged] = useState(null); const { preferences, updateSection } = usePreferences(); const { branding, dashboard } = preferences;
+  useEffect(() => { getDashboardSummary().then(setSummary); }, []); if (!summary) return <p className="p-6 text-slate-500">Loading dashboard...</p>;
+  const maxTrendValue = Math.max(...summary.salesTrend.map((day) => parseFloat(day.total)), 1);
+  const cards = { today: { label: "Today's Sales", value: money(summary.todaySales.total), sublabel: `${summary.todaySales.count} transaction${summary.todaySales.count === 1 ? '' : 's'}`, accent: 'yellow' }, month: { label: 'This Month', value: money(summary.monthSales.total), sublabel: `${summary.monthSales.count} transaction${summary.monthSales.count === 1 ? '' : 's'}` }, products: { label: 'Total Products', value: summary.totalProducts, accent: 'yellow' }, lowStock: { label: 'Low Stock', value: summary.lowStockCount, sublabel: summary.lowStockCount > 0 ? 'needs attention' : 'all good' } };
+  function moveCard(target) { if (!dragged || dragged === target) return; const order = dashboard.cards.filter((id) => id !== dragged); order.splice(order.indexOf(target), 0, dragged); updateSection('dashboard', { cards: order }); setDragged(null); }
+  return <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8"><div className="mb-7 flex flex-wrap items-end justify-between gap-3"><div><p className="text-sm font-bold uppercase tracking-[.12em] text-red-700">{branding.name} overview</p><h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Dashboard</h1></div><span className="rounded-xl bg-yellow-100 px-3 py-2 text-sm font-bold text-yellow-900">Drag cards to rearrange</span></div>
+    {dashboard.pinned.length > 0 && <div className="mb-6 flex flex-wrap gap-3">{dashboard.pinned.includes('sale') && <Link to="/sales" className="rounded-xl bg-red-700 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-red-800">+ New Sale</Link>}{dashboard.pinned.includes('product') && <Link to="/products" className="rounded-xl border border-red-200 bg-white px-4 py-3 text-sm font-bold text-red-700 shadow-sm hover:bg-red-50">+ Add Product</Link>}</div>}
+    <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">{dashboard.cards.filter((id) => dashboard.visible[id]).map((id) => <StatCard key={id} {...cards[id]} draggable onDragStart={() => setDragged(id)} onDrop={() => moveCard(id)} />)}</div>
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">{dashboard.visible.chart && <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-900"><h2 className="font-bold text-slate-900 dark:text-white">Sales - Last 7 Days</h2><p className="mb-5 text-sm text-slate-400">Daily sales performance</p><div className="flex h-40 items-end gap-2">{summary.salesTrend.length === 0 ? <p className="text-sm text-slate-400">No sales data yet</p> : summary.salesTrend.map((day) => { const heightPct = (parseFloat(day.total) / maxTrendValue) * 100; return <div key={day.date} className="flex h-full flex-1 flex-col items-center justify-end"><div className="w-full rounded-t-lg bg-gradient-to-t from-red-700 to-red-500 transition hover:from-yellow-500 hover:to-yellow-300" style={{ height: `${heightPct}%`, minHeight: day.total > 0 ? '4px' : '0' }} title={money(day.total)} /><span className="mt-2 text-xs text-slate-400">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}</span></div>; })}</div></section>}
+      {dashboard.visible.transactions && <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-900"><h2 className="font-bold text-slate-900 dark:text-white">Recent Transactions</h2><p className="mb-3 text-sm text-slate-400">Your latest completed sales</p>{summary.recentTransactions.length === 0 ? <p className="text-sm text-slate-400">No transactions yet</p> : <table className="w-full text-sm"><tbody>{summary.recentTransactions.map((sale) => <tr key={sale.id} className="border-b border-slate-100 last:border-0 dark:border-slate-800"><td className="py-3"><p className="font-semibold">Sale #{sale.id}</p><p className="text-xs text-slate-400">{sale.cashier_name}</p></td><td className="py-3 text-right"><p className="font-bold">{money(sale.total_amount)}</p><p className="text-xs text-slate-400">{new Date(sale.created_at).toLocaleString()}</p></td></tr>)}</tbody></table>}</section>}</div>
+  </div>;
 }
-
 export default DashboardPage;
