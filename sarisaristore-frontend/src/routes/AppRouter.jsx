@@ -3,24 +3,21 @@ import LoginPage from '../features/auth/LoginPage';
 import ProtectedRoute from '../components/layout/ProtectedRoute';
 import ProductsPage from '../features/products/ProductsPage';
 import SalesPage from '../features/sales/SalesPage';
-
-function DashboardPlaceholder() {
-  return <h1 className="p-8 text-2xl font-bold">Dashboard (coming soon)</h1>;
-}
-
+import DashboardPage from '../features/dashboard/DashboardPage';
+import ReportsPage from '../features/reports/ReportsPage';
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPlaceholder />
-            </ProtectedRoute>
-          }
-        />
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="/products"
           element={
@@ -29,6 +26,14 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/reports"
+  element={
+    <ProtectedRoute>
+      <ReportsPage />
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="/sales"
           element={
