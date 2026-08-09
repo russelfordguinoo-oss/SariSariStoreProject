@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-function ProductForm({ initialData, categories, onSubmit, onCancel }) {
+function ProductForm({ initialData, categories, onSubmit, onCancel, onCreateCategory }) {
   const [form, setForm] = useState({
     name: '',
     barcode: '',
@@ -11,6 +11,10 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
     current_stock: '',
     low_stock_threshold: '5',
   });
+  const [showCategoryCreator, setShowCategoryCreator] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  const [savingCategory, setSavingCategory] = useState(false);
 
   // If editing an existing product, pre-fill the form
   useEffect(() => {
@@ -41,6 +45,24 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
       current_stock: parseInt(form.current_stock) || 0,
       low_stock_threshold: parseInt(form.low_stock_threshold) || 5,
     });
+  }
+
+  async function handleCreateCategory() {
+    const name = newCategoryName.trim();
+    if (!name) return;
+
+    setSavingCategory(true);
+    setCategoryError('');
+    try {
+      const category = await onCreateCategory(name);
+      setForm((current) => ({ ...current, category_id: String(category.id) }));
+      setNewCategoryName('');
+      setShowCategoryCreator(false);
+    } catch (err) {
+      setCategoryError(err.response?.data?.message || 'Unable to add this category.');
+    } finally {
+      setSavingCategory(false);
+    }
   }
 
   return createPortal(
@@ -74,7 +96,10 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
           className="w-full border rounded p-2 mb-3"
         />
 
-        <label className="block text-sm font-medium mb-1">Category</label>
+        <div className="mb-1 flex items-center justify-between gap-3">
+          <label className="text-sm font-medium">Category</label>
+          <button type="button" onClick={() => { setShowCategoryCreator((visible) => !visible); setCategoryError(''); }} className="text-xs font-bold text-red-700 hover:text-red-800">{showCategoryCreator ? 'Cancel' : '+ New category'}</button>
+        </div>
         <select
           name="category_id"
           value={form.category_id}
@@ -86,6 +111,8 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
+
+        {showCategoryCreator && <div className="mb-3 rounded-lg border border-red-100 bg-red-50 p-3"><div className="flex gap-2"><input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="Category name" autoComplete="off" className="min-w-0 flex-1 rounded border border-slate-300 bg-white p-2 text-sm" /><button type="button" onClick={handleCreateCategory} disabled={savingCategory || !newCategoryName.trim()} className="rounded bg-red-700 px-3 text-sm font-bold text-white disabled:opacity-50">{savingCategory ? 'Adding...' : 'Add'}</button></div>{categoryError && <p className="mt-2 text-xs font-semibold text-red-700">{categoryError}</p>}</div>}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
