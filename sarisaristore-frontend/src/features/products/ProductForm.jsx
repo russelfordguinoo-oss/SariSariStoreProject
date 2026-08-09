@@ -46,6 +46,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <form
         onSubmit={handleSubmit}
+        autoComplete="off"
         className="bg-white p-6 rounded-lg shadow-md w-full max-w-md max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-xl font-bold mb-4">
@@ -57,6 +58,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
           name="name"
           value={form.name}
           onChange={handleChange}
+          autoComplete="off"
           className="w-full border rounded p-2 mb-3"
           required
         />
@@ -66,6 +68,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
           name="barcode"
           value={form.barcode}
           onChange={handleChange}
+          autoComplete="off"
           className="w-full border rounded p-2 mb-3"
         />
 
@@ -91,6 +94,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
               step="0.01"
               value={form.price}
               onChange={handleChange}
+              autoComplete="off"
               className="w-full border rounded p-2 mb-3"
               required
             />
@@ -103,6 +107,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
               step="0.01"
               value={form.cost}
               onChange={handleChange}
+              autoComplete="off"
               className="w-full border rounded p-2 mb-3"
             />
           </div>
@@ -116,6 +121,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
               type="number"
               value={form.current_stock}
               onChange={handleChange}
+              autoComplete="off"
               className="w-full border rounded p-2 mb-4"
             />
           </div>
@@ -126,6 +132,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
               type="number"
               value={form.low_stock_threshold}
               onChange={handleChange}
+              autoComplete="off"
               className="w-full border rounded p-2 mb-4"
             />
           </div>
