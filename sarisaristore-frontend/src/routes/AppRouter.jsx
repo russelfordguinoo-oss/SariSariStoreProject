@@ -10,6 +10,7 @@ import InventoryPage from '../features/inventory/InventoryPage';
 import TransactionsPage from '../features/transactions/TransactionsPage';
 import SettingsPage from '../features/settings/SettingsPage';
 import LandingPage from '../features/landing/LandingPage';
+import CreditsPage from '../features/credits/CreditsPage';
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -22,6 +23,7 @@ function AppRouter() {
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/sales" element={<SalesPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/credits" element={<CreditsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>

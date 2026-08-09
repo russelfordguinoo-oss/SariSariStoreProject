@@ -5,7 +5,7 @@ const defaults = {
   branding: { name: 'Sari-Sari Store', logo: '', banner: '', address: '', phone: '', email: '', hours: '', description: '' },
   theme: { primary: '#b91c1c', secondary: '#facc15', accent: '#fef3c7', mode: 'light', sidebar: 'expanded', density: 'comfortable' },
   dashboard: { cards: ['today', 'month', 'products', 'lowStock'], visible: { today: true, month: true, products: true, lowStock: true, chart: true, transactions: true }, pinned: ['sale', 'product'] },
-  navigation: { order: ['dashboard', 'products', 'inventory', 'sales', 'transactions', 'reports'], favorites: [], recent: [] },
+  navigation: { order: ['dashboard', 'products', 'inventory', 'sales', 'transactions', 'credits', 'reports'], favorites: [], recent: [] },
   inventory: { sort: 'name', view: 'detailed', pageSize: '25', filters: '', alertThreshold: '5' },
   notifications: { lowStock: true, outOfStock: true, newSales: true, orders: false, announcements: true },
 };

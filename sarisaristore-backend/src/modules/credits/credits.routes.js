@@ -1,0 +1,2 @@
+const express = require('express'); const c = require('./credits.controller'); const { verifyToken } = require('../auth/auth.middleware'); const router = express.Router();
+router.use(verifyToken); router.get('/dashboard', c.getDashboard); router.get('/customers', c.listCustomers); router.post('/customers', c.createCustomer); router.get('/customers/:id', c.getProfile); router.put('/customers/:id', c.updateCustomer); router.delete('/customers/:id', c.archiveCustomer); router.post('/credits/:id/payments', c.recordPayment); module.exports = router;

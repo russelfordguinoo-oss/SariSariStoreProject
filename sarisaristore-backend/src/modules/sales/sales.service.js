@@ -15,9 +15,12 @@ function validateCart(items) {
   }
 }
 
-async function checkout(userId, items) {
+async function checkout(userId, items, credit) {
   validateCart(items);
-  return salesRepository.createSale(userId, items);
+  if (credit && (!credit.customerId || credit.paymentType !== 'credit')) {
+    const error = new Error('A customer is required for credit sales'); error.statusCode = 400; throw error;
+  }
+  return salesRepository.createSale(userId, items, credit);
 }
 
 module.exports = { checkout };

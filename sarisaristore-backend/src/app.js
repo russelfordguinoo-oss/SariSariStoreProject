@@ -8,6 +8,7 @@ const inventoryRoutes = require('./modules/inventory/inventory.routes');
 const dashboardRoutes = require('./modules/dashboard/dashboard.routes');
 const reportsRoutes = require('./modules/reports/reports.routes');
 const assistantRoutes = require('./modules/assistant/assistant.routes');
+const creditsRoutes = require('./modules/credits/credits.routes');
 
 const app = express();
 
@@ -26,4 +27,11 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/assistant', assistantRoutes);
+app.use('/api/credits', creditsRoutes);
+
+// Keep API failures predictable for the POS and credit workflows.
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.statusCode || 500).json({ message: err.message || 'Something went wrong', code: err.code, creditLimit: err.creditLimit, projectedBalance: err.projectedBalance });
+});
 module.exports = app;

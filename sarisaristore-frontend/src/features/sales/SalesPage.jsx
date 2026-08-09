@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getProducts } from '../../api/products.api';
 import { checkout } from '../../api/sales.api';
+import { getCreditCustomers } from '../../api/credits.api';
 
 function SalesPage() {
   const [products, setProducts] = useState([]);
@@ -9,10 +10,16 @@ function SalesPage() {
   const [processing, setProcessing] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const [paymentType, setPaymentType] = useState('full');
+  const [customers, setCustomers] = useState([]);
+  const [customerId, setCustomerId] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [confirmLimitExceeded, setConfirmLimitExceeded] = useState(false);
 
   useEffect(() => {
     getProducts({ search }).then(setProducts);
   }, [search]);
+  useEffect(() => { getCreditCustomers().then(setCustomers); }, []);
 
   function addToCart(product) {
     setCart((prev) => {
@@ -57,12 +64,15 @@ function SalesPage() {
         productId: item.product.id,
         quantity: item.quantity,
       }));
-      const result = await checkout(items);
+      const credit = paymentType === 'credit' ? { paymentType: 'credit', customerId, dueDate: dueDate || null, confirmLimitExceeded } : undefined;
+      if (paymentType === 'credit' && !customerId) { setError('Select a customer before recording credit.'); setProcessing(false); return; }
+      const result = await checkout(items, credit);
       setSuccessMessage(`Sale #${result.id} completed — total ₱${result.totalAmount.toFixed(2)}`);
       setCart([]);
       // Refresh product list so stock numbers reflect the sale
       getProducts({ search }).then(setProducts);
     } catch (err) {
+      if (err.response?.data?.code === 'CREDIT_LIMIT_EXCEEDED') { setError(`${err.response.data.message} Tick the confirmation box to continue.`); return; }
       setError(err.response?.data?.message || 'Checkout failed');
     } finally {
       setProcessing(false);
@@ -141,6 +151,7 @@ function SalesPage() {
           <span>Total</span>
           <span>₱{total.toFixed(2)}</span>
         </div>
+        <fieldset className="mb-4 rounded-xl border border-slate-200 p-3"><legend className="px-1 text-sm font-bold">Payment type</legend><div className="flex gap-3 text-sm"><label className="flex items-center gap-2"><input type="radio" checked={paymentType === 'full'} onChange={() => setPaymentType('full')} /> Pay in full</label><label className="flex items-center gap-2"><input type="radio" checked={paymentType === 'credit'} onChange={() => setPaymentType('credit')} /> Customer credit (Utang)</label></div>{paymentType === 'credit' && <div className="mt-3 space-y-2"><select value={customerId} onChange={(e) => setCustomerId(e.target.value)} className="w-full rounded-lg border p-2 text-sm"><option value="">Select customer</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.full_name} — balance ₱{Number(customer.outstanding_balance).toFixed(2)}</option>)}</select><input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="w-full rounded-lg border p-2 text-sm" /><label className="flex gap-2 text-xs text-slate-600"><input type="checkbox" checked={confirmLimitExceeded} onChange={(e) => setConfirmLimitExceeded(e.target.checked)} /> I confirm this sale can proceed if it exceeds the customer’s credit limit.</label><a href="/credits" className="block text-xs font-bold text-red-700">+ Add or manage customers</a></div>}</fieldset>
 
         {error && (
           <p className="bg-red-100 text-red-700 text-sm p-2 rounded mb-3">{error}</p>
@@ -154,7 +165,7 @@ function SalesPage() {
           disabled={cart.length === 0 || processing}
           className="w-full rounded-lg bg-red-700 py-3 font-bold text-white hover:bg-red-800 disabled:opacity-50"
         >
-          {processing ? 'Processing...' : 'Complete Sale'}
+          {processing ? 'Processing...' : paymentType === 'credit' ? 'Record Credit Sale' : 'Complete Sale'}
         </button>
       </div>
     </div>

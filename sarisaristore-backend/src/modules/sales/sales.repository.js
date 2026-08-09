@@ -10,7 +10,7 @@ async function getProductForUpdate(connection, productId) {
   return rows[0];
 }
 
-async function createSale(userId, items) {
+async function createSale(userId, items, credit) {
   // items: [{ productId, quantity }]
   const connection = await pool.getConnection();
 
@@ -54,6 +54,19 @@ async function createSale(userId, items) {
     );
     const saleId = saleResult.insertId;
 
+    let creditId = null;
+    if (credit?.paymentType === 'credit') {
+      const [[customer]] = await connection.query('SELECT id, credit_limit FROM customers WHERE id = ? AND is_archived = 0 FOR UPDATE', [credit.customerId]);
+      if (!customer) throw Object.assign(new Error('Customer not found or archived'), { statusCode: 404 });
+      const [[balanceRow]] = await connection.query('SELECT COALESCE(SUM(balance), 0) AS balance FROM customer_credits WHERE customer_id = ? FOR UPDATE', [customer.id]);
+      const projectedBalance = Number(balanceRow.balance) + totalAmount;
+      if (customer.credit_limit !== null && projectedBalance > Number(customer.credit_limit) && !credit.confirmLimitExceeded) {
+        throw Object.assign(new Error('This sale exceeds the customer credit limit. Confirm to continue.'), { statusCode: 409, code: 'CREDIT_LIMIT_EXCEEDED', projectedBalance, creditLimit: Number(customer.credit_limit) });
+      }
+      const [creditResult] = await connection.query('INSERT INTO customer_credits (customer_id, sale_id, original_amount, balance, due_date) VALUES (?, ?, ?, ?, ?)', [customer.id, saleId, totalAmount, totalAmount, credit.dueDate || null]);
+      creditId = creditResult.insertId;
+    }
+
     // Step 3: insert each sale item, update stock, and log the inventory change
     for (const item of saleItemsData) {
       await connection.query(
@@ -76,7 +89,7 @@ async function createSale(userId, items) {
     // Everything succeeded — make it permanent
     await connection.commit();
 
-    return { id: saleId, totalAmount, itemCount: saleItemsData.length };
+    return { id: saleId, totalAmount, itemCount: saleItemsData.length, creditId };
   } catch (err) {
     // Anything failed above — undo all of it, as if none of it happened
     await connection.rollback();
