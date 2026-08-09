@@ -43,11 +43,12 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-4 sm:p-6">
+      <div className="flex min-h-full items-start justify-center sm:items-center">
       <form
         onSubmit={handleSubmit}
         autoComplete="off"
-        className="bg-white p-6 rounded-lg shadow-md w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="my-0 w-full max-w-md rounded-lg bg-white p-6 shadow-md"
       >
         <h2 className="text-xl font-bold mb-4">
           {initialData ? 'Edit Product' : 'Add Product'}
@@ -154,6 +155,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }
