@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getStockHistory } from '../../api/inventory.api';
 
 function StockHistoryModal({ product, onClose }) {
@@ -12,7 +13,7 @@ function StockHistoryModal({ product, onClose }) {
     });
   }, [product.id]);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
@@ -49,7 +50,8 @@ function StockHistoryModal({ product, onClose }) {
           </table>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
