@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { usePreferences } from '../../context/PreferencesContext';
 
@@ -34,7 +34,7 @@ function LoginPage() {
         {error && <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</div>}
         <label className="mb-5 block text-sm font-bold text-slate-700">Email address<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 font-normal outline-none transition focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-100" required autoComplete="email" /></label>
         <label className="mb-6 block text-sm font-bold text-slate-700">Password<div className="relative mt-2"><input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 pr-20 font-normal outline-none transition focus:border-red-600 focus:bg-white focus:ring-4 focus:ring-red-100" required autoComplete="current-password" /><button type="button" onClick={() => setShowPassword((current) => !current)} className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-50">{showPassword ? 'Hide' : 'Show'}</button></div></label>
-        <button type="submit" disabled={loading} style={{ backgroundColor: theme.primary }} className="w-full rounded-xl py-3.5 font-extrabold text-white shadow-lg shadow-red-200 transition hover:-translate-y-0.5 hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">{loading ? 'Signing in...' : 'Sign in'}</button><p className="mt-6 text-center text-xs text-slate-400">Secure access for authorized store staff only.</p>
+        <button type="submit" disabled={loading} style={{ backgroundColor: theme.primary }} className="w-full rounded-xl py-3.5 font-extrabold text-white shadow-lg shadow-red-200 transition hover:-translate-y-0.5 hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">{loading ? 'Signing in...' : 'Sign in'}</button><Link to="/about" className="mt-3 block w-full rounded-xl border border-slate-300 py-3 text-center text-sm font-bold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">View Tindahan features</Link><p className="mt-6 text-center text-xs text-slate-400">Secure access for authorized store staff only.</p>
       </form></main>
     </div>
   </div>;
