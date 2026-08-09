@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 function ProductForm({ initialData, categories, onSubmit, onCancel }) {
   const [form, setForm] = useState({
@@ -42,7 +43,7 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
     });
   }
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-4 sm:p-6">
       <div className="flex min-h-full items-start justify-center sm:items-center">
       <form
@@ -156,7 +157,8 @@ function ProductForm({ initialData, categories, onSubmit, onCancel }) {
         </div>
       </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
