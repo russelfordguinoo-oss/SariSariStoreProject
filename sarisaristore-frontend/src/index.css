@@ -52,6 +52,24 @@ button:not(:disabled):active { transform: scale(0.98); }
 [data-store-theme="custom"].dark .text-red-600 {
   color: color-mix(in srgb, var(--store-primary) 45%, white) !important;
 }
+[data-store-theme="custom"] .settings-panel select {
+  color: #1e293b !important;
+  background-color: #fff !important;
+  color-scheme: light;
+}
+[data-store-theme="custom"] .settings-panel select option {
+  color: #1e293b;
+  background-color: #fff;
+}
+[data-store-theme="custom"].dark .settings-panel select {
+  color: #fff !important;
+  background-color: color-mix(in srgb, var(--store-primary) 30%, #0f172a) !important;
+  color-scheme: dark;
+}
+[data-store-theme="custom"].dark .settings-panel select option {
+  color: #fff;
+  background-color: #1e293b;
+}
 [data-store-theme="custom"] .text-yellow-900,
 [data-store-theme="custom"] .text-yellow-800 { color: #422006 !important; }
 /* Use a solid theme color for data bars: it is reliable across all supported browsers. */
