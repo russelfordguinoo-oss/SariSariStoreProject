@@ -44,6 +44,14 @@ button:not(:disabled):active { transform: scale(0.98); }
 [data-store-theme="custom"] .settings-panel {
   color: #1e293b !important;
 }
+[data-store-theme="custom"].dark .rounded-2xl.bg-white:not(.settings-panel),
+[data-store-theme="custom"].dark .rounded-xl.border.bg-white {
+  background-color: color-mix(in srgb, var(--store-primary) 30%, #0f172a) !important;
+}
+[data-store-theme="custom"].dark .text-red-700,
+[data-store-theme="custom"].dark .text-red-600 {
+  color: color-mix(in srgb, var(--store-primary) 45%, white) !important;
+}
 [data-store-theme="custom"] .text-yellow-900,
 [data-store-theme="custom"] .text-yellow-800 { color: #422006 !important; }
 /* Use a solid theme color for data bars: it is reliable across all supported browsers. */
